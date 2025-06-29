@@ -20,41 +20,50 @@ const { frontmatter } = Astro.props;
 // build navigation from markdown files
 const docs = import.meta.glob<DocModule>("/src/pages/**/*.md", { eager: true });
 
-const sections = Object.entries(docs).reduce((acc, [file, doc]) => {
-	if (!file || !doc?.frontmatter?.title) return acc;
-	
-	const pathMatch = file.match(/\/src\/pages\/(.+?)\.md$/);
-	if (!pathMatch) return acc;
-	
-	const fullPath = pathMatch[1];
-	const pathParts = fullPath.split("/");
-	const section = pathParts[0];
-	const subsection = pathParts.length > 1 ? pathParts[1] : null;
+const sections = Object.entries(docs).reduce(
+	(acc, [file, doc]) => {
+		if (!file || !doc?.frontmatter?.title) return acc;
 
-	if (!acc[section]) {
-		acc[section] = { pages: [], subsections: {} };
-	}
+		const pathMatch = file.match(/\/src\/pages\/(.+?)\.md$/);
+		if (!pathMatch) return acc;
 
-	const pageData = {
-		title: doc.frontmatter.title,
-		order: doc.frontmatter.order ?? 99,
-		url: `/${fullPath}`,
-	};
+		const fullPath = pathMatch[1];
+		const pathParts = fullPath.split("/");
+		const section = pathParts[0];
+		const subsection = pathParts.length > 1 ? pathParts[1] : null;
 
-	if (subsection) {
-		if (!acc[section].subsections[subsection]) {
-			acc[section].subsections[subsection] = [];
+		if (!acc[section]) {
+			acc[section] = { pages: [], subsections: {} };
 		}
-		acc[section].subsections[subsection].push(pageData);
-	} else {
-		acc[section].pages.push(pageData);
-	}
 
-	return acc;
-}, {} as Record<string, {
-	pages: Array<{ title: string; order: number; url: string }>;
-	subsections: Record<string, Array<{ title: string; order: number; url: string }>>;
-}>);
+		const pageData = {
+			title: doc.frontmatter.title,
+			order: doc.frontmatter.order ?? 99,
+			url: `/${fullPath}`,
+		};
+
+		if (subsection) {
+			if (!acc[section].subsections[subsection]) {
+				acc[section].subsections[subsection] = [];
+			}
+			acc[section].subsections[subsection].push(pageData);
+		} else {
+			acc[section].pages.push(pageData);
+		}
+
+		return acc;
+	},
+	{} as Record<
+		string,
+		{
+			pages: Array<{ title: string; order: number; url: string }>;
+			subsections: Record<
+				string,
+				Array<{ title: string; order: number; url: string }>
+			>;
+		}
+	>,
+);
 
 // sort sections and pages
 const sectionPriority: Record<string, number> = {
@@ -68,17 +77,23 @@ const orderedSections = Object.entries(sections)
 		const priorityB = sectionPriority[b] ?? 0;
 		return priorityA !== priorityB ? priorityA - priorityB : a.localeCompare(b);
 	})
-	.reduce((acc, [section, data]) => {
-		data.pages.sort((a, b) => a.order - b.order);
-		Object.keys(data.subsections).forEach(subsection => {
-			data.subsections[subsection].sort((a, b) => a.order - b.order);
-		});
-		acc[section] = data;
-		return acc;
-	}, {} as typeof sections);
+	.reduce(
+		(acc, [section, data]) => {
+			data.pages.sort((a, b) => a.order - b.order);
+			Object.keys(data.subsections).forEach((subsection) => {
+				data.subsections[subsection].sort((a, b) => a.order - b.order);
+			});
+			acc[section] = data;
+			return acc;
+		},
+		{} as typeof sections,
+	);
 
-const isDocsIndex = Astro.url.pathname === "/docs" || Astro.url.pathname === "/docs/";
-const pageTitle = isDocsIndex ? "Documentation" : `Documentation · ${frontmatter?.title}`;
+const isDocsIndex =
+	Astro.url.pathname === "/docs" || Astro.url.pathname === "/docs/";
+const pageTitle = isDocsIndex
+	? "Documentation"
+	: `Documentation · ${frontmatter?.title}`;
 ---
 
 <!doctype html>
