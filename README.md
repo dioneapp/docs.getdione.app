@@ -1,4 +1,4 @@
-# Dione Website
+# Dione Docs
 
 A modern web application built with Astro, TypeScript, and Tailwind CSS.
 
@@ -6,7 +6,7 @@ A modern web application built with Astro, TypeScript, and Tailwind CSS.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/getdione.app.git
+git clone https://github.com/yourusername/docs.getdione.app.git
 cd getdione.app
 ```
 
