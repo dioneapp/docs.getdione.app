@@ -91,9 +91,7 @@ const orderedSections = Object.entries(sections)
 
 const isDocsIndex =
 	Astro.url.pathname === "/docs" || Astro.url.pathname === "/docs/";
-const pageTitle = isDocsIndex
-	? "Documentation"
-	: `${frontmatter?.title}`;
+const pageTitle = isDocsIndex ? "Documentation" : `${frontmatter?.title}`;
 ---
 
 <!doctype html>
