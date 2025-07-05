@@ -58,17 +58,20 @@ You can specify a specific version like `"3.10"` instead of `"latest"` if needed
 
 This section defines the steps required to install or set up the application after cloning the repository.
 
-Each step includes:
+Each installation step should include the following fields:
 
-* `name`: a human-readable description of the step
-* `env` (optional): environment specification for running commands
-* `commands`: a list of commands to run
-
-  * Simple commands: plain strings
-  * Platform-specific commands: use an object with:
-
-    * `platform`: one of `windows`, `linux`, `mac`
-    * `command`: the command string
+- **`name`**: A human-readable description of the step.
+- **`env`** (optional): Specifies the environment in which the commands should be executed.
+  - Can be a simple string with the environment name.
+  - Or an object with the following fields:
+    - `name`: Name of the environment.
+    - `type` (`uv` by default): Environment type, either `uv` or `conda`.
+    - `version` (`latest` by default): Python version to use.
+- **`commands`**: A list of commands to execute.
+  - Can be simple strings (commands).
+  - For platform-specific commands, use an object with:
+    - `platform`: One of `windows`, `linux`, or `mac`.
+    - `command`: The command string for that platform.
 
 ### Example
 
@@ -84,7 +87,8 @@ Each step includes:
     "name": "Installing requirements",
     "env": {
       "name": "env",
-      "version": "3.10"
+      "version": "3.10",
+      "type": "uv"
     },
     "commands": [
       "cd melotts",
@@ -95,11 +99,8 @@ Each step includes:
 ]
 ```
 
-* **`env.name`**: the name of the virtual environment or tool wrapper (e.g., `env` or `myenv`).
-* **`env.version`**: the interpreter version to use (e.g., `3.10`).
-
 When `env` is specified, all commands in that step will run within the given environment.
-Dione will also add the dependency `uv` to the dependencies automatically, if it is not already specified.
+Dione will also add the dependency `uv` or `conda` (if you specify env.type `conda`) to the dependencies automatically, if it is not already specified.
 
 ---
 
